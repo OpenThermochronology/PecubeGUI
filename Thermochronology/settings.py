@@ -7,7 +7,7 @@ This is where you can change for instance:
 
 """
 
-import configs as conf
+import Utils.configs as conf
 
 ###################### Parameters for plotting #########################
 

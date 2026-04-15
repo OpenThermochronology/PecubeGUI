@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (QPushButton,QWidget,QLabel,QCheckBox,QVBoxLayout,
                              QErrorMessage,QLineEdit,QTableWidgetItem,QRadioButton,
                              )
 from PyQt5.QtGui import (QIntValidator)
-import configs as conf
+import Utils.configs as conf
 from PyQt5.QtCore import Qt
 import main as pgui
 import Utils.PGUI_utils as pgu

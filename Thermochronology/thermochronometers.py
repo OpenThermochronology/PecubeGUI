@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import (QAction,QPushButton,QWidget,QLabel,QCheckBox,QVBoxL
 from PyQt5.QtCore import Qt
 from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtGui import (QIntValidator)
-import configs as conf
+import Utils.configs as conf
 import os
 import stat
 import sys

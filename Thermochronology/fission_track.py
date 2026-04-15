@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (QWidget,QLabel,QCheckBox,QVBoxLayout,
                              QGridLayout,QComboBox,QGroupBox,QHBoxLayout,
                              QErrorMessage,QLineEdit,QTableWidgetItem,QRadioButton,
                              )
-import configs as conf
+import Utils.configs as conf
 from PyQt5.QtCore import Qt
 import Utils.PGUI_utils as pgu
 import Utils.interface as interface
