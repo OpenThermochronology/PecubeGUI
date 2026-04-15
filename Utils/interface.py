@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (QErrorMessage,QSplitter,QTabWidget,QMainWindow,
                              QTableWidgetItem,QApplication,qApp,QTabBar,QStylePainter,
                              QStyleOptionTab,QStyle,QFrame)
 from PyQt5.QtGui import (QIcon,QKeySequence,QFont)
-import configs as conf
+import Utils.configs as conf
 import os
 from PyQt5.QtCore import (Qt)
 from PyQt5 import QtCore

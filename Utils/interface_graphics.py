@@ -10,7 +10,7 @@ This module contains functions and classes used in the interface to plot model o
 
 
 import os
-import configs as conf
+import Utils.configs as conf
 from PyQt5.QtWidgets import (QWidget, QPushButton,QVBoxLayout, QHBoxLayout, QGridLayout,
                              QTabWidget, QLabel,QMessageBox,QComboBox,QFileDialog,
                              QDockWidget,QTreeView,QListView,QGroupBox,QErrorMessage)

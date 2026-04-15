@@ -10,7 +10,7 @@ This module contains functions and classes used in the interface to perform spec
 
 
 # Import modules
-import configs as conf
+import Utils.configs as conf
 from PyQt5.QtWidgets import (QErrorMessage,QSplitter,QTabWidget,QMainWindow,
                              QMdiArea,QDesktopWidget,QMessageBox,QMdiSubWindow,
                              QProgressBar,QLabel,QHBoxLayout,QPushButton,

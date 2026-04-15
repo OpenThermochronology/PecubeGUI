@@ -13,7 +13,7 @@ for the input parameters for Pecube and CalcAge.
 import sys
 import os
 
-import configs as conf
+import Utils.configs as conf
 from PyQt5.QtWidgets import (QWidget, QMainWindow,QPushButton,
                              QVBoxLayout, QHBoxLayout, QGridLayout,
                              QTabWidget, QLabel,QLineEdit,QMessageBox, QCheckBox,
@@ -185,7 +185,7 @@ class ParamWin(QMainWindow, object):
             file.close()
             
             # 2) Check preferences
-            PreferencesPath = os.path.join(FolderPath,"preferences.txt")
+            PreferencesPath = os.path.join(FolderPath,"Core","preferences.txt")
             with open(PreferencesPath) as file:
                 for line in file:
                     if "ShowConsole" in line:
@@ -405,7 +405,7 @@ class ParamWin(QMainWindow, object):
             file.close()
             
             # 1) Check preferences
-            PreferencesPath = os.path.join(FolderPath,"preferences.txt")
+            PreferencesPath = os.path.join(FolderPath,"Core","preferences.txt")
             with open(PreferencesPath) as file:
                 for line in file:
                     if "ShowConsole" in line:
