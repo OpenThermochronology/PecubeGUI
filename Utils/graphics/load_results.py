@@ -12,7 +12,7 @@ It contains classes to read and load model output from Pecube.
 import os
 import xarray as xr
 import pandas as pd
-import configs as conf
+import Utils.configs as conf
 
 #-----------------------------------------------------------------------------
 #-------------------------------- Classes ------------------------------------

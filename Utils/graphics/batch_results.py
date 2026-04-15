@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-import configs as conf
+import Utils.configs as conf
 import Thermochronology.thermochronometers as th
 import Thermochronology.settings as Thermo_settings
 import Utils.PGUI_utils as pgu

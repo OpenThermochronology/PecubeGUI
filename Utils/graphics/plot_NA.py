@@ -28,7 +28,7 @@ from peakutils.plot import plot as pplot
 from scipy.optimize import curve_fit    # To find gaussian parameters
 
 
-import configs as conf
+import Utils.configs as conf
 import Utils.PGUI_utils as pgu
 
 #-----------------------------------------------------------------------------

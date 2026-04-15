@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (QWidget, QScrollArea,QGridLayout,
 from PyQt5.QtGui import (QIntValidator)
 from PyQt5.QtCore import Qt
 
-import configs as conf
+import Utils.configs as conf
 
 #-----------------------------------------------------------------------------
 #-------------------------------- Classes ------------------------------------
