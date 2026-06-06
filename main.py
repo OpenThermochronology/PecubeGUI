@@ -25,7 +25,7 @@ import os
 #                   sys._MEIPASS, 'PyQt5', 'Qt5', 'lib',
 #                   'QtWebEngineCore.framework', 'Versions','5','Helpers','QtWebEngineProcess'
 #               ))
-import configs as conf
+import Utils.configs as conf
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import (QWidget, QMainWindow, QApplication, QPushButton,
                              QVBoxLayout, QHBoxLayout, QGridLayout,
@@ -167,7 +167,11 @@ class MainWindow(QMainWindow, object):
         self.app = app            
         self.PrefList = conf.PrefList 
         self.FolderPath = FolderPath
-        self.PecubePath = os.path.abspath(self.PrefList['PecubePath'])
+        # Try to find Pecube in PATH if PrefList path is invalid
+        if os.path.exists(self.PrefList.get('PecubePath', '')):
+            self.PecubePath = os.path.abspath(self.PrefList['PecubePath'])
+        else:
+            self.PecubePath = shutil.which("Pecube") or ""
         self.UI()
         self.oldInput = 0 #signal for old input file
         self.InputParamSignal = 0 #Signal for input parameters provided
@@ -447,7 +451,7 @@ class MainWindow(QMainWindow, object):
     def saveFile(self):
         """ To save the file "preferences.txt". """
         
-        name = os.path.join(self.FolderPath,"preferences.txt")
+        name = os.path.join(self.FolderPath,"Core","preferences.txt")
         try:
             file = open(name, 'w')
         except PermissionError:
@@ -820,7 +824,7 @@ def main():
                 print(conf.PecubeFolderPath)
                 conf.PrefList['PecubePath'] = PecubeFolderPath
                 # Save new path
-                conf.PreferencesPath = os.path.join(FolderPath,"preferences.txt")
+                conf.PreferencesPath = os.path.join(FolderPath,"Core","preferences.txt")
                 # if sys.platform == 'win32' or sys.platform =='cygwin':
                     # change_access_rights(conf.PreferencesPath, AccessRight.Full)
                 file = open(conf.PreferencesPath, 'w+')
