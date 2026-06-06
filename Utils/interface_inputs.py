@@ -170,6 +170,7 @@ class ParamWin(QMainWindow, object):
             filePath = self.input_folder
             fileName = os.path.join(filePath, 'Pecube.in')
             if os.path.exists(fileName):
+                os.chmod(fileName, 0o666)
                 os.remove(fileName)
             file = open(fileName, 'w')
             inputPar = self.ParamTable.input_parameters
@@ -202,6 +203,8 @@ class ParamWin(QMainWindow, object):
                     return
 
                 if os.path.exists(DataFolder):
+                    os.chmod(DataFolder, 0o666)
+                    print("File permissions modified successfully!")
                     files = os.listdir(DataFolder)
                     for f in files:
                         if f.startswith(conf.Variable_names['4He/3He observation file']):
@@ -396,6 +399,7 @@ class ParamWin(QMainWindow, object):
             filePath = self.input_folder
             fileName = os.path.join(filePath, 'Pecube.in')
             if os.path.exists(fileName):
+                os.chmod(fileName, 0o666)
                 os.remove(fileName)
             file = open(fileName, 'w')
             inputPar = self.ParamTable.input_parameters
@@ -2369,6 +2373,7 @@ class ShowFaultGeometry(QWidget):
         # Save input file
         fileName = os.path.join(self.Param.PFolder,'input', 'Pecube.in')
         if os.path.exists(fileName):
+            os.chmod(fileName, 0o666)
             os.remove(fileName)
         file = open(fileName, 'w')
         inputPar = self.Param.parent.ParamTable.input_parameters
@@ -4961,17 +4966,19 @@ class WindowParameters(QWidget, object):
                 self.plotSpace.axes.plot([0,8000], [0,8000], marker = 'None', linestyle = '-', 
                              label = '1:1 line', color = 'lightgrey', alpha = 1)
                 # Plot data obs vs pred
-                self.plotSpace.axes.plot(Elev_grains,Elevations_predicted,marker = 'o', linestyle = 'None',color='g')
-                self.plotSpace.axes.set_xlim(left = min(min(Elev_grains), min(Elevations_predicted)), 
-                                             right = max(max(Elev_grains), max(Elevations_predicted))+20)
-                self.plotSpace.axes.set_ylim(bottom = min(min(Elev_grains), min(Elevations_predicted)), 
-                                             top = max(max(Elev_grains), max(Elevations_predicted)))
+                Elev_grains2 = abs(np.array(Elev_grains))
+                Elevations_predicted2 = np.array([Elevations_predicted[i]-(Elevations_predicted[i]+Elev_grains[i]) if Elev_grains[i]<0.0 else Elevations_predicted[i] for i in range(len(Elevations_predicted))])
+                self.plotSpace.axes.plot(Elev_grains2,Elevations_predicted2,marker = 'o', linestyle = 'None',color='g')
+                self.plotSpace.axes.set_xlim(left = min(min(Elev_grains2), min(Elevations_predicted2)), 
+                                             right = max(max(Elev_grains2), max(Elevations_predicted2))+20)
+                self.plotSpace.axes.set_ylim(bottom = min(min(Elev_grains2), min(Elevations_predicted2)), 
+                                             top = max(max(Elev_grains2), max(Elevations_predicted2)))
                 self.plotSpace.axes.set_aspect('equal')
                 self.plotSpace.axes.set_xlabel(u'Observed elevation (m)')
                 self.plotSpace.axes.set_ylabel(u'Predicted elevation (m)')
                 # Compute mean difference in elevation
-                MeanDiffElev = np.mean(abs(Elevations_predicted-Elev_grains))
-                StdDiffElev = np.std(abs(Elevations_predicted-Elev_grains))
+                MeanDiffElev = np.mean(abs(Elevations_predicted2-Elev_grains2))
+                StdDiffElev = np.std(abs(Elevations_predicted2-Elev_grains2))
                 if Nb_discard:
                     self.plotSpace.fig.suptitle("nskip = " + str(nskip) +
                                                 "\nNumber of data out of DEM = "+str(Nb_discard) +"/"+str(len(Elevations_predicted)))

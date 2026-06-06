@@ -1327,8 +1327,9 @@ class GraphWin(pvqt.MainWindow):
                     item = dataplot[0]
                     # Because age uncertainties are in an input file, ensure we target the right uncertainties to their age
                     # Get sample name of data > -9999
-                    sampleName = datac["SID"][np.logical_not(datac[agecol[item]+'OBS'] == -9999)]
-                    sampleNamePred = inputc['SAMPLE'][np.logical_not(datac[agecol[item]+'OBS'] == -9999)]
+                    bool_array = datac[agecol[item]+'OBS'] <= 0.0 
+                    sampleName = datac["SID"][np.logical_not(bool_array)]
+                    sampleNamePred = inputc['SAMPLE'][np.logical_not(bool_array)]
                     # sort data by sample (alphabetically)
                     sampleNametemp = [s for s in sampleName.values if pgu.isNaN(s) == False]
                     sampleNamePredtemp = [s for s in sampleNamePred.values if pgu.isNaN(s) == False]
@@ -1341,20 +1342,20 @@ class GraphWin(pvqt.MainWindow):
                     
                     # Error on MFTL and std are assumed constant
                     if item == conf.Variable_names["Mean Fission Track Length"]:
-                        error_temp = float(self.ParametersInput.DParameters[conf.Variable_names['Mean_fission_track_length_error_inversion']])
+                        error_temp = float(self.ParametersInput.DParameters[conf.Variable_names['Mean_fission_track_length_error_inversion']])/100
                         xlabel = "Mean fission track lengths (µm)"
                     elif item == conf.Variable_names["Mean Fission Track Length error"]:
-                        error_temp = float(self.ParametersInput.DParameters[conf.Variable_names['Mean_fission_track_length_std_error_inversion']])
+                        error_temp = float(self.ParametersInput.DParameters[conf.Variable_names['Mean_fission_track_length_std_error_inversion']])/100
                         xlabel = "std Mean fission track lengths (µm)"
                     try:
-                        obs = datac[agecol[item]+'OBS'][np.logical_not(datac[agecol[item]+'OBS'] == -9999)]
+                        obs = datac[agecol[item]+'OBS'][np.logical_not(bool_array)]
                         obs = obs[sampleNameIndexes]
-                        pred = datac[agecol[item]+'PRED'][np.logical_not(datac[agecol[item]+'OBS'] == -9999)]
+                        pred = datac[agecol[item]+'PRED'][np.logical_not(bool_array)]
                         pred = pred[sampleNameIndexes]
                         
-                        ElevPred = datac[agecol['alt']+'PRED'][np.logical_not(datac[agecol[item]+'OBS'] == -9999)]
+                        ElevPred = datac[agecol['alt']+'PRED'][np.logical_not(bool_array)]
                         ElevPred = ElevPred[sampleNameIndexes]
-                        ElevObs = datac[agecol['alt']+'OBS'][np.logical_not(datac[agecol[item]+'OBS'] == -9999)]
+                        ElevObs = datac[agecol['alt']+'OBS'][np.logical_not(bool_array)]
                         ElevObs = ElevObs[sampleNameIndexes]
                         if self.UsePredictedElevation.currentIndex() == 1:
                             ElevPred = ElevObs
@@ -1745,8 +1746,9 @@ class GraphWin(pvqt.MainWindow):
             item = dataplot[0]
             # Because age uncertainties are in an input file, ensure we target the right uncertainties to their age
             # Get sample name of data > -9999
-            sampleName = datac["SID"][np.logical_not(datac[agecol[item]+'OBS'] == -9999)]
-            sampleNamePred = inputc['SAMPLE'][np.logical_not(datac[agecol[item]+'OBS'] == -9999)]
+            bool_array = datac[agecol[item]+'OBS'] <= 0.0 
+            sampleName = datac["SID"][np.logical_not(bool_array)]
+            sampleNamePred = inputc['SAMPLE'][np.logical_not(bool_array)]
             # sort data by sample (alphabetically)
             sampleNametemp = [s for s in sampleName.values if pgu.isNaN(s) == False]
             sampleNamePredtemp = [s for s in sampleNamePred.values if pgu.isNaN(s) == False]
@@ -1759,14 +1761,14 @@ class GraphWin(pvqt.MainWindow):
             
             # Error on MFTL and std are assumed constant
             if item == conf.Variable_names["Mean Fission Track Length"]:
-                error_temp = float(self.ParametersInput.DParameters[conf.Variable_names['Mean_fission_track_length_error_inversion']])
+                error_temp = float(self.ParametersInput.DParameters[conf.Variable_names['Mean_fission_track_length_error_inversion']])/100
             elif item == conf.Variable_names["Mean Fission Track Length error"]:
-                error_temp = float(self.ParametersInput.DParameters[conf.Variable_names['Mean_fission_track_length_std_error_inversion']])
+                error_temp = float(self.ParametersInput.DParameters[conf.Variable_names['Mean_fission_track_length_std_error_inversion']])/100
             
             try:
-                obs = datac[agecol[item]+'OBS'][np.logical_not(datac[agecol[item]+'OBS'] == -9999)]
+                obs = datac[agecol[item]+'OBS'][np.logical_not(bool_array)]
                 obs = obs[sampleNameIndexes]
-                pred = datac[agecol[item]+'PRED'][np.logical_not(datac[agecol[item]+'OBS'] == -9999)]
+                pred = datac[agecol[item]+'PRED'][np.logical_not(bool_array)]
                 pred = pred[sampleNameIndexes]
                 errorpred_temp = errorpred*pred
                 errorpred_temp = np.asarray([s for s in errorpred_temp.values if pgu.isNaN(s) == False])
