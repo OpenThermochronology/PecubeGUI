@@ -25,7 +25,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "pecubegui = main:main",
+            "pecubegui = PecubeGUI.main:main",
         ],
     },
 )
