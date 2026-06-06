@@ -69,7 +69,7 @@ class apatite(QWidget):
                 "Error (Ma)": ["0"]*int(Param.DParameters['ngrains']),
                 "rmr0": ["0"]*int(Param.DParameters['ngrains']),
                 "MFTL (µm)":["0"]*int(Param.DParameters['ngrains']),
-                "Error (µm)":["0"]*int(Param.DParameters['ngrains'])}
+                "Std (µm)":["0"]*int(Param.DParameters['ngrains'])}
         # How many grains in total?
         self.TotGrain = 0
         for j in range(int(self.Winparent.nbSampleValue.text())):
@@ -97,14 +97,14 @@ class apatite(QWidget):
         self.Initial_track_length_list.setCurrentIndex(int(self.Param.DParameters[conf.Variable_names['Initial_FTL_model']]))
         self.Initial_track_length_value = QLineEdit()
         self.Initial_track_length_value.setText(Param.DParameters[conf.Variable_names['Unannealed_FTL_value']])
-        self.MFTL_error_label = QLabel('MFTL error (µm):')
+        self.MFTL_error_label = QLabel('MFTL unc (%):')
         self.MFTL_error_label.setFont(conf.font10)
         self.MFTL_error_label.setAlignment(Qt.AlignRight)
         self.MFTL_error_label.setToolTip('Set an uncertainty on the MFTL. This will be use in the misfit calculation (for inversion).')
         self.MFTL_error = QLineEdit()
         self.MFTL_error.setText(Param.DParameters[conf.Variable_names['Mean_fission_track_length_error_inversion']])
         self.MFTL_error.setEnabled(False)
-        self.MFTL_std_error_label = QLabel('MFTL std error (µm):')
+        self.MFTL_std_error_label = QLabel('MFTL std unc (%):')
         self.MFTL_std_error_label.setFont(conf.font10)
         self.MFTL_std_error_label.setAlignment(Qt.AlignRight)
         self.MFTL_std_error_label.setToolTip('Set an uncertainty on the std of MFTL. This will be use in the misfit calculation (for inversion).')
@@ -152,8 +152,8 @@ class apatite(QWidget):
         self.Initial_track_length_value.textChanged.connect(lambda: self.update_FTLInitValue())
         self.Initial_track_length_list.currentIndexChanged.connect(lambda: self.update_FTLInit())
         self.Kinetic_parameter_list.currentIndexChanged.connect(lambda: self.update_FTLkinetic())
-        self.MFTL_error.editingFinished.connect(lambda:pgui.store_input(self.Winparent,{conf.Variable_names['Mean_fission_track_length_error_inversion']: str(self.MFTL_error.text())}))
-        self.MFTL_std_error.editingFinished.connect(lambda:pgui.store_input(self.Winparent,{conf.Variable_names['Mean_fission_track_length_std_error_inversion']: str(self.MFTL_std_error.text())}))
+        self.MFTL_error.editingFinished.connect(lambda:pgui.store_input(self.Winparent,{conf.Variable_names['Mean_fission_track_length_error_inversion']: str(float(self.MFTL_error.text())/100)}))
+        self.MFTL_std_error.editingFinished.connect(lambda:pgui.store_input(self.Winparent,{conf.Variable_names['Mean_fission_track_length_std_error_inversion']: str(float(self.MFTL_std_error.text())/100)}))
         
         self.Q = QWidget()
         self.Q.setLayout(self.vBox)
