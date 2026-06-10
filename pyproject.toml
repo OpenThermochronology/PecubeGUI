@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pecubegui"
-version = "0.1.19"
+version = "0.1.20"
 description = "A GUI-based tool for the Pecube thermochronology software."
 authors = [
     {name = "Maxime Bernard"}
