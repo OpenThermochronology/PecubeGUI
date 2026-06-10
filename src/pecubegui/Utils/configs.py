@@ -65,7 +65,11 @@ ColorTextDefault = QBrush(QColor(255,255,255))
 
 # The path where the Pecube directory is located
 # PecubePath = os.path.join(QCoreApplication.applicationDirPath(),"Pecube")
-PecubeFolderPath = os.path.join(FolderPath,"Pecube")
+try:
+    import pecube
+    PecubeFolderPath = pecube.DATA_DIR
+except ImportError:
+    PecubeFolderPath = os.path.join(FolderPath, "Pecube")
 ProjectName = ''
 
 # Get the style of the interface from Combinear.qss file
@@ -89,8 +93,13 @@ else:
     appStyle = "Fusion"
 file.close()
     
-PecubeFolderPath = PrefList['PecubePath']
-PecubeFolderPath = os.path.abspath(PecubeFolderPath)
+# Preferences file can still override the auto-detected path (manual installs,
+# HPC users who built Pecube outside of pip/conda)
+_pref_path = PrefList.get('PecubePath', '')
+if (_pref_path
+        and _pref_path != '__CONDA_PREFIX_PLACEHOLDER__'
+        and os.path.isdir(os.path.abspath(_pref_path))):
+    PecubeFolderPath = os.path.abspath(_pref_path)
                 
 #############################################################
 # Parameters for 3D plots
