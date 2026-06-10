@@ -1,0 +1,4 @@
+Theme = Dark  
+ShowConsole = 1  
+PecubePath = D:\
+UsePredictedElevation = no  
