@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pecubegui"
+version = "0.1.19"
+description = "A GUI-based tool for the Pecube thermochronology software."
+authors = [
+    {name = "Maxime Bernard"}
+]
+requires-python = ">=3.9"
+license = {text = "GPL-3.0-or-later"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+]
+dependencies = [
+    "PyQt5",
+    "numpy",
+    "pandas",
+    "scipy",
+    "matplotlib",
+    "pyvista",
+    "pyvistaqt",
+    "folium",
+    "xarray",
+    "rioxarray",
+    "gdal",
+    "bmi-topography",
+    "cmcrameri",
+    "peakutils",
+]
+
+[project.optional-dependencies]
+pecube = ["pecube==4.3.8"]
+
+[project.urls]
+Documentation = "https://pecubegui-doc.readthedocs.io/en/latest/index.html"
+Source = "https://github.com/OpenThermochronology/PecubeGUI"
+
+[project.scripts]
+pecubegui = "pecubegui.main:main"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/",
+    "LICENSE",
+    "README.md",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pecubegui"]
