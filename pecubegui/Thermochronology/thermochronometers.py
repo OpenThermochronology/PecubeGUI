@@ -17,20 +17,20 @@ from PyQt5.QtWidgets import (QAction,QPushButton,QWidget,QLabel,QCheckBox,QVBoxL
 from PyQt5.QtCore import Qt
 from PyQt5.Qt import QStandardItemModel, QStandardItem
 from PyQt5.QtGui import (QIntValidator)
-import pecubegui.Utils.configs as conf
+import Utils.configs as conf
 import os
 import stat
 import sys
 import numpy as np
 from scipy.interpolate import interp1d
-import pecubegui.main as pgui
-import pecubegui.Utils.PGUI_utils as pgu
+import main as pgui
+import Utils.PGUI_utils as pgu
 import xarray as xr
-import pecubegui.Thermochronology.helium as Helium
-import pecubegui.Thermochronology.fission_track as FT
-import pecubegui.Thermochronology.argon as Argon
-import pecubegui.Thermochronology.trapped_charge as TC
-import pecubegui.Thermochronology.settings as Thermo_settings
+import Thermochronology.helium as Helium
+import Thermochronology.fission_track as FT
+import Thermochronology.argon as Argon
+import Thermochronology.trapped_charge as TC
+import Thermochronology.settings as Thermo_settings
 
 
 ##############################################################################
@@ -585,13 +585,25 @@ class set_Thermochron_Parameters(QWidget):
             
         # Write parameters for AFT
         try:
+            file.write(str(self.parent.input_parameters[conf.Variable_names['FTL_kinetic_parameter']])+'\t')
+        except KeyError:
+            file.write(str(self.Param.DParameters[conf.Variable_names['FTL_kinetic_parameter']])+'\t')
+        try:
+            file.write(str(self.parent.input_parameters[conf.Variable_names['Initial_FTL_model']])+'\t')
+        except KeyError:
+            file.write(str(self.Param.DParameters[conf.Variable_names['Initial_FTL_model']])+'\t')
+        try:
             file.write(str(self.parent.input_parameters[conf.Variable_names['FissionTrackModel']])+'\t')
         except KeyError:
             file.write(str(self.Param.DParameters[conf.Variable_names['FissionTrackModel']])+'\t') # By default Ketcham et al. (2007)
         try:
-            file.write(str(self.parent.input_parameters['rhoST'])+'\n')
+            file.write(str(self.parent.input_parameters['rhoST'])+'\t')
         except KeyError:
-            file.write(str(self.Param.DParameters['rhoST'])+'\n')
+            file.write(str(self.Param.DParameters['rhoST'])+'\t')
+        try:
+            file.write(str(self.parent.input_parameters[conf.Variable_names['Unannealed_FTL_value']])+'\n')
+        except KeyError:
+            file.write(str(self.Param.DParameters[conf.Variable_names['Unannealed_FTL_value']])+'\n')
             
        
         # Write parameters for KAr

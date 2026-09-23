@@ -7,7 +7,7 @@ This is where you can change for instance:
 
 """
 
-import pecubegui.Utils.configs as conf
+import Utils.configs as conf
 
 ###################### Parameters for plotting #########################
 
@@ -120,7 +120,7 @@ def dict_pecube():
         	   'FTL' : 'y',
 			   'alt' : 'y',
                'He43obs':'k',
-               'He43pred':'b',
+               'He43pred':'k',
                'THL' : '#cca300',
                'OSL' : '#cc2900',
                'ESR' : '#0033cc',

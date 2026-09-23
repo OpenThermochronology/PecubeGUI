@@ -14,15 +14,15 @@ from PyQt5.QtWidgets import (QPushButton,QWidget,QLabel,QCheckBox,QVBoxLayout,
                              QErrorMessage,QLineEdit,QTableWidgetItem,QRadioButton,
                              )
 from PyQt5.QtGui import (QIntValidator)
-import pecubegui.Utils.configs as conf
+import Utils.configs as conf
 from PyQt5.QtCore import Qt
-import pecubegui.main as pgui
-import pecubegui.Utils.PGUI_utils as pgu
-import pecubegui.Utils.interface as interface
+import main as pgui
+import Utils.PGUI_utils as pgu
+import Utils.interface as interface
 import os
 import numpy as np
 import xarray as xr
-import pecubegui.Thermochronology.helium_43 as He43
+import Thermochronology.helium_43 as He43
 
 
 #############################################################################################

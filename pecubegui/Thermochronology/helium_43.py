@@ -12,10 +12,10 @@ from PyQt5.QtWidgets import (QPushButton,QWidget,QLabel,QCheckBox,QVBoxLayout,
                              QErrorMessage,QLineEdit,QTableWidgetItem,
                              )
 from PyQt5.QtGui import (QIntValidator)
-import pecubegui.Utils.configs as conf
+import Utils.configs as conf
 from PyQt5.QtCore import Qt
-import pecubegui.Utils.PGUI_utils as pgu
-import pecubegui.Utils.interface as interface
+import Utils.PGUI_utils as pgu
+import Utils.interface as interface
 import os
 import numpy as np
 import xarray as xr
