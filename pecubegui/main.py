@@ -25,7 +25,7 @@ import os
 #                   sys._MEIPASS, 'PyQt5', 'Qt5', 'lib',
 #                   'QtWebEngineCore.framework', 'Versions','5','Helpers','QtWebEngineProcess'
 #               ))
-import pecubegui.Utils.configs as conf
+import Utils.configs as conf
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import (QWidget, QMainWindow, QApplication, QPushButton,
                              QVBoxLayout, QHBoxLayout, QGridLayout,
@@ -60,24 +60,24 @@ from folium.plugins import Draw
 import subprocess
 import webbrowser
 import xarray as xr
-import pecubegui.Utils.PGUI_utils as pgu
-from pecubegui.Utils import misfits
-import pecubegui.Utils.interface as U_interface
-import pecubegui.Utils.GIS as GIS
-import pecubegui.Utils.graphics.set_Thermochronometers as plot_thermo
-import pecubegui.Utils.graphics.batch_results as batch
-import pecubegui.Utils.graphics.plot_NA as plot_NA
-import pecubegui.Utils.graphics.plot_NA as load_results
-import pecubegui.Utils.graphics.plot_2Dmaps as plot_2D
-import pecubegui.Utils.interface_graphics as GUI_graph
-import pecubegui.Utils.interface_inputs as GUI_inputs
-import pecubegui.Topography.update_topography as update_topo
+import Utils.PGUI_utils as pgu
+from Utils import misfits
+import Utils.interface as U_interface
+import Utils.GIS as GIS
+import Utils.graphics.set_Thermochronometers as plot_thermo
+import Utils.graphics.batch_results as batch
+import Utils.graphics.plot_NA as plot_NA
+import Utils.graphics.plot_NA as load_results
+import Utils.graphics.plot_2Dmaps as plot_2D
+import Utils.interface_graphics as GUI_graph
+import Utils.interface_inputs as GUI_inputs
+import Topography.update_topography as update_topo
 
 try:
     from cmcrameri import cmc #import colormaps from Crameri, F. (2018), Scientific colour-maps, Zenodo,doi:10.5281/zenodo.1243862    
 except: # cmap is already registered
     pass
-import pecubegui.Thermochronology.thermochronometers as th
+import Thermochronology.thermochronometers as th
 from bmi_topography import Topography
 try:
     from PyQt5 import QtWebEngineWidgets
@@ -99,8 +99,7 @@ FolderPath = conf.FolderPath
 
 # Force to go to the directory of the executable
 print("Working Directory: ", FolderPath)
-# Suggestion: Avoid os.chdir() in library code. 
-# Better to use absolute paths relative to os.path.dirname(__file__) for assets.
+os.chdir(FolderPath)
     
 #Locate Icones directory
 IconPath = conf.IconPath
@@ -168,11 +167,7 @@ class MainWindow(QMainWindow, object):
         self.app = app            
         self.PrefList = conf.PrefList 
         self.FolderPath = FolderPath
-        # Try to find Pecube in PATH if PrefList path is invalid
-        if os.path.exists(self.PrefList.get('PecubePath', '')):
-            self.PecubePath = os.path.abspath(self.PrefList['PecubePath'])
-        else:
-            self.PecubePath = shutil.which("Pecube") or ""
+        self.PecubePath = os.path.abspath(self.PrefList['PecubePath'])
         self.UI()
         self.oldInput = 0 #signal for old input file
         self.InputParamSignal = 0 #Signal for input parameters provided
@@ -452,7 +447,7 @@ class MainWindow(QMainWindow, object):
     def saveFile(self):
         """ To save the file "preferences.txt". """
         
-        name = os.path.join(pgu.get_preferences_path())
+        name = os.path.join(self.FolderPath,"Core","preferences.txt")
         try:
             file = open(name, 'w')
         except PermissionError:
@@ -825,7 +820,7 @@ def main():
                 print(conf.PecubeFolderPath)
                 conf.PrefList['PecubePath'] = PecubeFolderPath
                 # Save new path
-                conf.PreferencesPath = pgu.get_preferences_path()
+                conf.PreferencesPath = os.path.join(FolderPath,"Core","preferences.txt")
                 # if sys.platform == 'win32' or sys.platform =='cygwin':
                     # change_access_rights(conf.PreferencesPath, AccessRight.Full)
                 file = open(conf.PreferencesPath, 'w+')
