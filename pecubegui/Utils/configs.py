@@ -13,7 +13,6 @@ from PyQt5.QtCore import (QLocale, QCoreApplication,QFile,QIODevice,QTextStream)
 from PyQt5.QtWidgets import QMessageBox,QFileDialog
 import os
 import sys
-import pecubegui.Utils.PGUI_utils as pgu
 
 # Set a list to store open windows
 WindowsOpen = []
@@ -24,7 +23,12 @@ WindowsOpen = []
 
 ########### Path to directories #############
 if sys.platform == 'darwin' or sys.platform=='linux':
-    FolderPath = os.path.realpath(os.getcwd())
+    #Handle whether application is open from command line or executable
+    if getattr(sys, 'frozen', False):
+        FolderPath = sys._MEIPASS
+    else:
+        FolderPath = os.path.abspath(sys.executable)[:-10]
+    #FolderPath = "/Users/maxime/Documents/Post-doc/PecubeGUI/"
     encoding_label = 'cp858'
     NEWLINE_SIZE_IN_BYTES = 1
 elif sys.platform == 'win32' or sys.platform =='cygwin':
@@ -34,7 +38,7 @@ elif sys.platform == 'win32' or sys.platform =='cygwin':
     import win32con, win32api
     
 # Locate Icones directory
-IconPath = pgu.get_icon_path()
+IconPath = os.path.join(FolderPath, "Icones")
 
 
 # For the format of doubles
@@ -69,12 +73,12 @@ PecubeFolderPath = os.path.join(FolderPath,"Pecube")
 ProjectName = ''
 
 # Get the style of the interface from Combinear.qss file
-stream = QFile(pgu.get_combinear_path())
+stream = QFile(os.path.join(FolderPath,"Core","Combinear.qss"))
 stream.open(QIODevice.ReadOnly)
 styleSheet = QTextStream(stream).readAll()
 
 # Read the preferences file to get the path of the Pecube folder
-PreferencesPath = pgu.get_preferences_path()
+PreferencesPath = os.path.join(FolderPath,"Core","preferences.txt")
 file = open(PreferencesPath, 'r')
 PrefList = {}
 for line in file:
@@ -436,3 +440,4 @@ class DefaultParameterValues:
             'zonation_flag':'0',
             'nLayers':'0'}
         self.TableParameters = {'nb_grains': '1',}
+

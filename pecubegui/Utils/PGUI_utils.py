@@ -10,7 +10,7 @@ This module contains functions and classes used in the interface to perform spec
 
 
 # Import modules
-import pecubegui.Utils.configs as conf
+import Utils.configs as conf
 from PyQt5.QtWidgets import (QErrorMessage,QSplitter,QTabWidget,QMainWindow,
                              QMdiArea,QDesktopWidget,QMessageBox,QMdiSubWindow,
                              QProgressBar,QLabel,QHBoxLayout,QPushButton,
@@ -39,26 +39,12 @@ import shutil
 import rioxarray
 import xarray as xr
 import math
-import importlib.resources
 
 ##############################################################################
 ############################ Functions #######################################
 ##############################################################################
 
 ################### General ####################
-#----------------------------------------------------------
-def get_combinear_path():
-    # to get the path to the combinear file
-    return str(importlib.resources.files('pecubegui').joinpath('combinear.qss'))
-
-def get_preferences_path():
-    # to get the path to the preferences file
-    return str(importlib.resources.files('pecubegui').joinpath('preferences.txt'))
-
-def get_icon_path():
-    # to get the path to the Icones directory
-    return str(importlib.resources.files('pecubegui').joinpath('Icones'))
-
 #----------------------------------------------------------
 def message(self, s):
     # Text to show in the console when a Pecube model runs
@@ -322,8 +308,11 @@ class old_Input:
                     self.ParametersInput.DParameters[conf.Variable_names['Ea_Zircon']] = parameters_list[i+idnumber+nbSamples][2]
                     #AFT parameters
                     idnumber += 1
-                    self.ParametersInput.DParameters['AnnModel'] = parameters_list[i+idnumber+nbSamples][0]
-                    self.ParametersInput.DParameters['rhoST'] = parameters_list[i+idnumber+nbSamples][1]
+                    self.ParametersInput.DParameters[conf.Variable_names['FTL_kinetic_parameter']] = parameters_list[i+idnumber+nbSamples][0]
+                    self.ParametersInput.DParameters[conf.Variable_names['Initial_FTL_model']] = parameters_list[i+idnumber+nbSamples][1]
+                    self.ParametersInput.DParameters['AnnModel'] = parameters_list[i+idnumber+nbSamples][2]
+                    self.ParametersInput.DParameters['rhoST'] = parameters_list[i+idnumber+nbSamples][3]
+                    self.ParametersInput.DParameters[conf.Variable_names['Unannealed_FTL_value']] = parameters_list[i+idnumber+nbSamples][4]
                     idnumber += 1
                     # self.ParametersInput.DParameters['NstepsHe43'] = parameters_list[i+idnumber+nbSamples][0]
                     # self.ParametersInput.DParameters['nColHe43'] = parameters_list[i+idnumber+nbSamples][1]
@@ -767,6 +756,7 @@ class Properties3D(QWidget):
             # Remove the mesh
             try: 
                 self.Object3D.plotter.remove_actor(self.MainMesh)
+                self.Object3D.plotter.remove_scalar_bar()
                 # Rebuild the mesh with updated color bar
                 self.MainMesh= self.Object3D.plotter.add_mesh(
                 self.grid,show_edges=False, cmap=self.ColormapCombo.currentText(), flip_scalars=True, scalar_bar_args=self.sargs, clim=[minval,maxval])
@@ -805,7 +795,7 @@ class Properties3D(QWidget):
         # Remove mesh from plottter
         self.Object3D.plotter.remove_actor(self.MainMesh)
         # Remove the current color bar
-        self.Object3D.plotter.remove_scalar_bar(title=active_scalar)
+        self.Object3D.plotter.remove_scalar_bar()
         # Plot the new mesh
         self.MainMesh= self.Object3D.plotter.add_mesh(
         self.grid,show_edges=False, cmap=self.ColormapCombo.currentText(), scalars=dataToPlot, flip_scalars=True, scalar_bar_args=self.sargs)

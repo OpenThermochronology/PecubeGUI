@@ -13,7 +13,7 @@ for the input parameters for Pecube and CalcAge.
 import sys
 import os
 
-import pecubegui.Utils.configs as conf
+import Utils.configs as conf
 from PyQt5.QtWidgets import (QWidget, QMainWindow,QPushButton,
                              QVBoxLayout, QHBoxLayout, QGridLayout,
                              QTabWidget, QLabel,QLineEdit,QMessageBox, QCheckBox,
@@ -31,17 +31,17 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 
 import pyvista as pv
 
-import pecubegui.Utils.PGUI_utils as pgu
-import pecubegui.Utils.interface as U_interface
-import pecubegui.Utils.GIS as GIS
+import Utils.PGUI_utils as pgu
+import Utils.interface as U_interface
+import Utils.GIS as GIS
 
-import pecubegui.Topography.update_topography as update_topo
+import Topography.update_topography as update_topo
 
 try:
     from cmcrameri import cmc #import colormaps from Crameri, F. (2018), Scientific colour-maps, Zenodo,doi:10.5281/zenodo.1243862    
 except: # cmap is already registered
     pass
-import pecubegui.Thermochronology.thermochronometers as th
+import Thermochronology.thermochronometers as th
 from bmi_topography import Topography
 try:
     from PyQt5 import QtWebEngineWidgets
@@ -170,7 +170,10 @@ class ParamWin(QMainWindow, object):
             filePath = self.input_folder
             fileName = os.path.join(filePath, 'Pecube.in')
             if os.path.exists(fileName):
-                os.chmod(fileName, 0o666)
+                try:
+                    os.chmod(fileName, 0o777)
+                except:
+                    print("Failed to change permissions")
                 os.remove(fileName)
             file = open(fileName, 'w')
             inputPar = self.ParamTable.input_parameters
@@ -186,7 +189,7 @@ class ParamWin(QMainWindow, object):
             file.close()
             
             # 2) Check preferences
-            PreferencesPath = conf.PreferencesPath
+            PreferencesPath = os.path.join(FolderPath,"Core","preferences.txt")
             with open(PreferencesPath) as file:
                 for line in file:
                     if "ShowConsole" in line:
@@ -203,7 +206,11 @@ class ParamWin(QMainWindow, object):
                     return
 
                 if os.path.exists(DataFolder):
-                    os.chmod(DataFolder, 0o666)
+                    try:
+                        os.chmod(DataFolder, 0o777)
+                    except:
+                        print("Failed to change permissions")
+                    
                     print("File permissions modified successfully!")
                     files = os.listdir(DataFolder)
                     for f in files:
@@ -399,7 +406,10 @@ class ParamWin(QMainWindow, object):
             filePath = self.input_folder
             fileName = os.path.join(filePath, 'Pecube.in')
             if os.path.exists(fileName):
-                os.chmod(fileName, 0o666)
+                try:
+                    os.chmod(fileName, 0o777)
+                except:
+                    print("Failed to change permissions")
                 os.remove(fileName)
             file = open(fileName, 'w')
             inputPar = self.ParamTable.input_parameters
@@ -409,7 +419,7 @@ class ParamWin(QMainWindow, object):
             file.close()
             
             # 1) Check preferences
-            PreferencesPath = conf.PreferencesPath
+            PreferencesPath = os.path.join(FolderPath,"Core","preferences.txt")
             with open(PreferencesPath) as file:
                 for line in file:
                     if "ShowConsole" in line:
@@ -2290,7 +2300,7 @@ class ShowFaultGeometry(QWidget):
         self.timeLabel.setAlignment(Qt.AlignCenter)
         self.FaultEvolSlider = QSlider(Qt.Horizontal)
         self.FaultEvolSlider.setMinimum(0)
-        self.FaultEvolSlider.setMaximum(int(self.Param.nstepiEdit13.text()))
+        self.FaultEvolSlider.setMaximum(int(self.Param.nstepiEdit13.text())+1)
         self.FaultEvolSlider.setSingleStep(1)
         self.scaleVelo = QSlider(Qt.Horizontal)
         self.scaleVelo.setMinimum(1)
@@ -2373,7 +2383,10 @@ class ShowFaultGeometry(QWidget):
         # Save input file
         fileName = os.path.join(self.Param.PFolder,'input', 'Pecube.in')
         if os.path.exists(fileName):
-            os.chmod(fileName, 0o666)
+            try:
+                os.chmod(fileName, 0o777)
+            except:
+                print("Failed to change permissions")
             os.remove(fileName)
         file = open(fileName, 'w')
         inputPar = self.Param.parent.ParamTable.input_parameters

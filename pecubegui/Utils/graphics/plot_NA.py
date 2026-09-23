@@ -28,8 +28,8 @@ from peakutils.plot import plot as pplot
 from scipy.optimize import curve_fit    # To find gaussian parameters
 
 
-import pecubegui.Utils.configs as conf
-import pecubegui.Utils.PGUI_utils as pgu
+import Utils.configs as conf
+import Utils.PGUI_utils as pgu
 
 #-----------------------------------------------------------------------------
 #-------------------------------- Functions ----------------------------------
@@ -384,7 +384,7 @@ class plotPecubeNA(QWidget):
         size_m = 15
 
         # Set the size of the markers of the scatter plot and of the misfit
-        size_mis = 50
+        size_mis = 30
         
         self.MisfitEvol = Misfit_evol
 

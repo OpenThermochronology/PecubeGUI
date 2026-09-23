@@ -10,7 +10,7 @@ This module contains functions and classes used in the interface to plot model o
 
 
 import os
-import pecubegui.Utils.configs as conf
+import Utils.configs as conf
 from PyQt5.QtWidgets import (QWidget, QPushButton,QVBoxLayout, QHBoxLayout, QGridLayout,
                              QTabWidget, QLabel,QMessageBox,QComboBox,QFileDialog,
                              QDockWidget,QTreeView,QListView,QGroupBox,QErrorMessage)
@@ -32,19 +32,19 @@ import traceback
 import pyvista as pv
 import pyvistaqt as pvqt
 import xarray as xr
-import pecubegui.Utils.PGUI_utils as pgu
-from pecubegui.Utils import misfits
-import pecubegui.Utils.interface as U_interface
-import pecubegui.Utils.graphics.set_Thermochronometers as plot_thermo
-import pecubegui.Utils.graphics.batch_results as batch
-import pecubegui.Utils.graphics.plot_NA as plot_NA
-import pecubegui.Utils.graphics.load_results as load_results
-import pecubegui.Utils.graphics.plot_2Dmaps as plot_2D
-import pecubegui.Utils.interface_inputs as GUI_inputs
+import Utils.PGUI_utils as pgu
+from Utils import misfits
+import Utils.interface as U_interface
+import Utils.graphics.set_Thermochronometers as plot_thermo
+import Utils.graphics.batch_results as batch
+import Utils.graphics.plot_NA as plot_NA
+import Utils.graphics.load_results as load_results
+import Utils.graphics.plot_2Dmaps as plot_2D
+import Utils.interface_inputs as GUI_inputs
 
 
-import pecubegui.Thermochronology.thermochronometers as th
-import pecubegui.Thermochronology.settings as Thermo_settings
+import Thermochronology.thermochronometers as th
+import Thermochronology.settings as Thermo_settings
 
 
 # Path of executable
@@ -273,14 +273,16 @@ class GraphWin(pvqt.MainWindow):
         self.dataFiles = ["CompareAGE.csv"]
         path = os.path.join(self.PecubePath,self.folderName,"output","CompareAGE.csv")
 
-        if os.path.exists(path):
+        if os.path.exists(path) and int(self.ParametersInput.DParameters[conf.Variable_names['Mode_age_computation']]) == 2:
+            # Sample-specific computation mode
             self.DataCombo.addItem("Age comparison")
             self.DataCombo.addItem("Elevation comparison")
             self.DataCombo.addItem("Date-eU")
             self.DataCombo.addItem("Age transect")
             if int(self.ParametersInput.DParameters[conf.Variable_names['Use Fission Track']]) > 0:
                 self.DataCombo.addItem("MFTL comparison")
-                self.DataCombo.addItem("MFTL vs elevation")
+                self.DataCombo.addItem("MFTL vs elevation")            
+
         # Is there any trapped-charge predictions ?
         path = os.path.join(self.PecubePath,self.folderName,"output",conf.Variable_names["ThL_file"])
         path2 = os.path.join(self.PecubePath,self.folderName,"output",conf.Variable_names["OSL_file"])
@@ -392,7 +394,7 @@ class GraphWin(pvqt.MainWindow):
                 self.plot_AgeData('Age elevation',self.thermochronometers,CompareAge,inputc=inputData,agecol=agecol,errname=errname,colores=colores,
                                         predname=predname,ageMarker=ageMarker)
             except Exception as E:
-                QErrorMessage(self).showMessage('Something wrong happen with plot Age elevation:' + str(E) + '. Please, make sure your input data location are all included in your DEM.')
+                QErrorMessage(self).showMessage('Something wrong happen with plot Age elevation:' + str(E) + '. Please, make sure your input data location are all included in your DEM or that a sample is not repeated.')
                 return
         
         # For all model nodes predictions
@@ -448,7 +450,7 @@ class GraphWin(pvqt.MainWindow):
                 self.plotComparisons('Age comparison',self.thermochronometers,CompareAge,inputc=inputData,agecol=agecol,errname=errname,colores=colores,
                                      ageMarker=ageMarker)
             except Exception as E:
-                QErrorMessage(self).showMessage('Something wrong happen with pplot obs vs pred: '+ str(E)+ '. Please, make sure your input data location are all included in your DEM.')
+                QErrorMessage(self).showMessage('Something wrong happen with pplot obs vs pred: '+ str(E)+ '. Please, make sure your input data location are all included in your DEM or that a sample is not repeated.')
                 return
         
         # Plot observations vs predictions for fission track
@@ -594,7 +596,7 @@ class GraphWin(pvqt.MainWindow):
                 self.plot_AgeData('Trapped charge',TrapCharSys,Pred,inputc=Obs,agecol=agecol,errname=errname,colores=colores,
                                         predname=predname,ageMarker=ageMarker)
             except:
-                QErrorMessage(self).showMessage('Something wrong happen with pplot obs vs pred. Please, make sure your input data location are all included in your DEM.')
+                QErrorMessage(self).showMessage('Something wrong happen with pplot obs vs pred. Please, make sure your input data location are all included in your DEM, or that a sample is not repeated.')
                 return
             
         # Plot observations vs predictions
@@ -633,7 +635,7 @@ class GraphWin(pvqt.MainWindow):
                                             predname=predname,ageMarker=ageMarker)
                 except Exception as E:
                     QErrorMessage(self).showMessage('Something wrong happen with plot Age elevation:' + str(E) + 
-                                                    '. Please, make sure your input data location are all included in your DEM.')
+                                                    '. Please, make sure your input data location are all included in your DEM or that a sample is not repeated.')
                     return
                 # try:
                 #     self.plot_AgeElevation('Date-eU',eU_array,AgeError,Ages,AgesObs,AgeErrorObs, 'eU (ppm)','Age (Ma)')
@@ -1282,7 +1284,6 @@ class GraphWin(pvqt.MainWindow):
                         
                         # Now we have the right uncertainties we need to sort the data, meaning we drop nan values at the end
                         # of the array
-                        print(obs.shape,pred.shape,errortemp.shape)
                         error = np.empty(pred.shape)
                         error[:] = np.nan
                         count = 0
@@ -1293,27 +1294,27 @@ class GraphWin(pvqt.MainWindow):
                         # Plot observation with error bars
                         segments = [
                             [(xi - err, yi), (xi + err, yi)]
-                            for xi, yi, err in zip(obs, ElevObs, error)
+                            for xi, yi, err in zip(obs, abs(ElevObs), error)
                         ]
 
                         # Create LineCollection for all error bars
                         error_lines = LineCollection(segments, colors=colores[item], linewidths=1)
                         self.plotSpace.axes.add_collection(error_lines)
-                        self.plotSpace.axes.plot(obs, ElevObs, marker = ageMarker[item],
+                        self.plotSpace.axes.plot(obs, abs(ElevObs), marker = ageMarker[item],
                                     linestyle = 'None',  label = 'observed_'+item, color = colores[item],zorder=9)
 
                         # Plot prediction
-                        self.plotSpace.axes.plot(pred, ElevPred,
+                        self.plotSpace.axes.plot(pred, abs(ElevPred),
                                   marker = ageMarker[item], linestyle = 'None', 
                                   label = 'predicted_'+predname[item], color = colores[item], alpha = 0.3,zorder = 10)
   
                     except ValueError:
                         print("\n Issue with errors, do not plot")
-                        self.plotSpace.axes.plot(datac[agecol[item]+'OBS'], datac[agecol['alt']+'OBS'], 
+                        self.plotSpace.axes.plot(datac[agecol[item]+'OBS'], abs(datac[agecol['alt']+'OBS']), 
                                       marker = ageMarker[item], linestyle = 'None',
                                      label = 'observed_'+item, 
                                      color = colores[item],alpha = 0.3)
-                        self.plotSpace.axes.plot(datac[agecol[item]+'PRED'], datac[agecol['alt']+'PRED'], 
+                        self.plotSpace.axes.plot(datac[agecol[item]+'PRED'], abs(datac[agecol['alt']+'PRED']), 
                                       marker = ageMarker[item], linestyle = 'None',
                                      label = 'predicted_'+predname[item], 
                                      color = colores[item],alpha = 0.3)
@@ -1379,27 +1380,27 @@ class GraphWin(pvqt.MainWindow):
                         # Plot observation
                         segments = [
                             [(xi - err, yi), (xi + err, yi)]
-                            for xi, yi, err in zip(obs, ElevObs, error)
+                            for xi, yi, err in zip(obs, abs(ElevObs), error)
                         ]
 
                         # Create LineCollection for all error bars
                         error_lines = LineCollection(segments, colors=colores[item], linewidths=1)
                         self.plotSpace.axes.add_collection(error_lines)
-                        self.plotSpace.axes.plot(obs, ElevObs, marker = ageMarker[item],
+                        self.plotSpace.axes.plot(obs, abs(ElevObs), marker = ageMarker[item],
                                     linestyle = 'None',  label = 'observed_'+item, color = colores[item],zorder=9)
                         
                         # Plot prediction
-                        self.plotSpace.axes.plot(pred, ElevPred,
+                        self.plotSpace.axes.plot(pred, abs(ElevPred),
                                   marker = ageMarker[item], linestyle = 'None', 
                                   label = 'predicted_'+predname[item], color = colores[item], alpha = 0.3,zorder = 10)
   
                     except ValueError:
                         print("\n Issue with errors, do not plot")
-                        self.plotSpace.axes.plot(datac[agecol[item]+'OBS'], datac[agecol['alt']+'OBS'], 
+                        self.plotSpace.axes.plot(datac[agecol[item]+'OBS'], abs(datac[agecol['alt']+'OBS']), 
                                       marker = ageMarker[item], linestyle = 'None',
                                      label = 'observed_'+item, 
                                      color = colores[item],alpha = 0.3)
-                        self.plotSpace.axes.plot(datac[agecol[item]+'PRED'], datac[agecol['alt']+'PRED'], 
+                        self.plotSpace.axes.plot(datac[agecol[item]+'PRED'], abs(datac[agecol['alt']+'PRED']), 
                                       marker = ageMarker[item], linestyle = 'None',
                                      label = 'predicted_'+predname[item], 
                                      color = colores[item],alpha = 0.3)
@@ -1466,20 +1467,20 @@ class GraphWin(pvqt.MainWindow):
                                 # plot sample individually (to change color)
                                 segments = [
                                         [(xi - err, yi), (xi + err, yi)]
-                                        for xi, yi, err in zip(obs, ElevObs, error)
+                                        for xi, yi, err in zip(obs, abs(ElevObs), error)
                                     ]
 
                                 # Create LineCollection for all error bars
                                 error_lines = LineCollection(segments, colors=colores[item], linewidths=1)
                                 self.plotSpace.axes.add_collection(error_lines)
-                                p1 = self.plotSpace.axes.plot(obs, ElevObs, marker = ageMarker[item],
+                                p1 = self.plotSpace.axes.plot(obs, abs(ElevObs), marker = ageMarker[item],
                                             linestyle = 'None',  label = 'observed_'+item, color = colores[item],zorder=9)
                                 # for p in range(len(obs)-1):
                                 #     self.plotSpace.axes.errorbar(obs[p+1], ElevObs[p+1],
                                 #                   xerr = error[p+1],
                                 #                   fmt = ageMarker[item], label = 'observed_'+item+sampleName_sorted[p], color = colores[item],zorder=9)
                                 # Plot prediction
-                                p2 = self.plotSpace.axes.plot(pred, ElevPred,
+                                p2 = self.plotSpace.axes.plot(pred, abs(ElevPred),
                                           marker = ageMarker[item], linestyle = 'None',
                                           label = 'predicted_'+predname[item], color = colores[item], alpha = 0.3,zorder=10)
                 
@@ -1487,11 +1488,11 @@ class GraphWin(pvqt.MainWindow):
                             except Exception as E:
                                 print("\n Issue with errors, do not plot")
                                 print(str(E))
-                                self.plotSpace.axes.plot(obs, ElevObs, 
+                                self.plotSpace.axes.plot(obs, abs(ElevObs), 
                                               marker = ageMarker[item], linestyle = 'None',
                                              label = 'observed_'+item, 
                                              color = colores[item],zorder=9)
-                                self.plotSpace.axes.plot(pred,ElevPred, 
+                                self.plotSpace.axes.plot(pred, abs(ElevPred), 
                                               marker = ageMarker[item], linestyle = 'None',
                                              label = 'predicted_'+predname[item], 
                                              color = colores[item],alpha = 0.3,zorder=10)

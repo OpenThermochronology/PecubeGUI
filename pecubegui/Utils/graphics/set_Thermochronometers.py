@@ -17,13 +17,13 @@ import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.collections import LineCollection
-import pecubegui.Utils.configs as conf
-import pecubegui.Thermochronology.thermochronometers as th
-import pecubegui.Thermochronology.settings as Thermo_settings
-import pecubegui.Utils.interface as U_interface
-import pecubegui.Utils.PGUI_utils as pgu
-import pecubegui.Utils.graphics.set_plot as set_plot
-import pecubegui.Utils.GIS as GIS
+import Utils.configs as conf
+import Thermochronology.thermochronometers as th
+import Thermochronology.settings as Thermo_settings
+import Utils.interface as U_interface
+import Utils.PGUI_utils as pgu
+import Utils.graphics.set_plot as set_plot
+import Utils.GIS as GIS
 
 
 
@@ -801,29 +801,30 @@ class He43_plot(QWidget):
                 xdata = self.inputc[self.He43dict["S3He"]][IndexObs]
                 ydata = self.inputc[self.He43dict["4HE"]][IndexObs]
                 set_plot.make_error_boxes(self.plotSpace.axes,xdata,ydata,self.inputc[self.errname["S3HE"]][IndexObs],self.inputc[self.errname["HE43"]][IndexObs],
-                                 facecolor='g',edgecolor='none',alpha=0.5,label='Portion extracted')
-                self.plotSpace.axes.errorbar(self.inputc[self.He43dict["S3He"]][IndexObs], self.inputc[self.He43dict["4HE"]][IndexObs], yerr = self.inputc[self.errname["HE43"]][IndexObs], 
-			    			         xerr = self.inputc[self.errname["S3HE"]][IndexObs],fmt = 'o', label = 'Observed', color = self.colores['He43obs'])
-                
+                                 facecolor='#9DCBF1',edgecolor='#4FA6EF',colorline='#4FA6EF',alpha=0.5,label='Observed')
+    
             elif profiletype == 'Step age':
+                  xdata = self.inputc[self.He43dict["S3He"]][IndexObs]
                   stepAgeobs = self.inputc[self.He43dict["4HE"]][IndexObs]/EjecProfile*AgeObs
                   error = stepAgeobs * (self.inputc[self.errname["HE43"]][IndexObs]/self.inputc[self.He43dict["4HE"]][IndexObs])
-                  self.plotSpace.axes.errorbar(self.inputc[self.He43dict["S3He"]][IndexObs],stepAgeobs , yerr = error, 
-			    		         fmt = 'o', label = 'Observed', color = self.colores['He43obs'])
+                  set_plot.make_error_boxes(self.plotSpace.axes,xdata,stepAgeobs,self.inputc[self.errname["S3HE"]][IndexObs],error,
+                                                   facecolor='#FBB2A0',edgecolor='#F75931',colorline='#F75931',alpha=0.5,label='Observed')
+
             elif profiletype == 'Normalized step age':
+                  xdata = self.inputc[self.He43dict["S3He"]][IndexObs]
                   stepAge = self.inputc[self.He43dict["4HE"]][IndexObs]/EjecProfile
                   # stepAge = stepAge/max(stepAge[:])
                   error = stepAge * (self.inputc[self.errname["HE43"]][IndexObs]/self.inputc[self.He43dict["4HE"]][IndexObs])
-                  self.plotSpace.axes.errorbar(self.inputc[self.He43dict["S3He"]][IndexObs],stepAge , yerr = error, 
-			    		         fmt = 'o', label = 'Observed', color = self.colores['He43obs'])
-
+                  set_plot.make_error_boxes(self.plotSpace.axes,xdata,stepAge,self.inputc[self.errname["S3HE"]][IndexObs],error,
+                                                                     facecolor='#ADF8AE',edgecolor='#2DC92F',colorline='#2DC92F',alpha=0.5,label='Observed')
+    
 			# Plot predictions
         if profiletype == '4He/3He spectrum':
             # prediction are plotted at Sum3He observations
             xdata = self.inputc[self.He43dict["S3He"]][IndexObs]
             self.plotSpace.axes.plot(xdata, self.datac[self.He43dict["4HePred"]][IndexPred], 
 		    			     marker = 's', linestyle = '-', 
-							 label = 'Predicted', color = self.colores['He43pred'], alpha = 0.3)
+							 label = 'Predicted', color = self.colores['He43pred'], alpha = 1.0)
             # self.plotSpace.axes.plot(self.datac[self.He43dict["S3HePred"]][IndexPred], self.datac[self.He43dict["4HePred"]][IndexPred], 
 		    # 			     marker = 's', linestyle = '-', 
 			# 				 label = 'Predicted', color = self.colores['He43pred'], alpha = 0.3)
@@ -836,7 +837,7 @@ class He43_plot(QWidget):
             stepAgepred = self.datac[self.He43dict["4HePred"]][IndexPred]/EjecProfile*AgePred
             self.plotSpace.axes.plot(xdata, stepAgepred, 
 		    	    		 marker = 's', linestyle = '-',
-							 label = 'Predicted', color = 'r', alpha = 0.3)	
+							 label = 'Predicted', color = 'k', alpha = 1.0)	
             self.plotSpace.axes.set_xlim(0,1.2)
             self.plotSpace.axes.set_ylim(0,max(max(stepAgeobs),max(stepAgepred))+1)
             
@@ -847,7 +848,7 @@ class He43_plot(QWidget):
             # stepAge = stepAge/max(stepAge[:])
             self.plotSpace.axes.plot(xdata, stepAge, 
 		    	    		 marker = 's', linestyle = '-',
-							 label = 'Predicted', color = (1,69/255,0), alpha = 0.3)	
+							 label = 'Predicted', color = 'k', alpha = 1.0)	
             self.plotSpace.axes.set_xlim(0,1.2)
             self.plotSpace.axes.set_ylim(0,1.2)
 

@@ -16,10 +16,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-import pecubegui.Utils.configs as conf
-import pecubegui.Thermochronology.thermochronometers as th
-import pecubegui.Thermochronology.settings as Thermo_settings
-import pecubegui.Utils.PGUI_utils as pgu
+import Utils.configs as conf
+import Thermochronology.thermochronometers as th
+import Thermochronology.settings as Thermo_settings
+import Utils.PGUI_utils as pgu
 
 
 
@@ -119,10 +119,10 @@ class AgeBatch(QWidget):
         
         ###### Second, sort the data #######
         # Elevations of data (prediction)
-        ObservedElevations = inputData['HEIGHT']
+        ObservedElevations_temp = abs(inputData['HEIGHT'])
         Observed_Data = inputData[self.ThermochronometerID]
         Observed_error = inputData['D'+self.ThermochronometerID]
-        # inputElevations = ElevationData.iloc[0:-1,1:]
+        ObservedElevations_Thermo = np.asarray([ObservedElevations_temp.values[i] for i in range(len(Observed_Data.values)) if not pgu.isNaN(Observed_Data.values[i])])
         Misfit = outputData.iloc[0:-1,0]
         # Output Ages - alternate line elevation and age
         outputAges = outputData.iloc[0:-1,1:] # Remove last parameter value (random value)
@@ -140,27 +140,39 @@ class AgeBatch(QWidget):
         if self.chartType == 'age-elevation':
             
             cmap = plt.get_cmap('magma')
-            print('nmodels : ', nmodels)
             models_IDs = np.linspace(0,1,nmodels)
             colors = cmap(models_IDs)
             for i in range(nmodels):
+                # Predicted elevations
+                PredictedElevations = outputAges.iloc[i*2].values
+                if conf.PrefList["UsePredictedElevation"] == 'yes':
+                    print('Using predicted elevations')
+                    ObservedElevations_Thermo = PredictedElevations
                 if self.Normalize_y.isChecked() == True: # Normalize elevation
-                    minElev = np.min(outputAges.iloc[i*2])
-                    maxElev = np.max(outputAges.iloc[i*2])
-                    Elevations = outputAges.iloc[i*2].values
-                    Elevations = (Elevations + abs(minElev)) / (maxElev+abs(minElev))
+                    Elevations_temp = ObservedElevations_Thermo #abs(outputAges.iloc[i*2].values)
+                    minElev = np.min(Elevations_temp)
+                    maxElev = np.max(Elevations_temp)
+                    Elevations = (Elevations_temp - minElev) / (maxElev-minElev) 
+               
                 else:
-                    Elevations = outputAges.iloc[i*2].values
+                    Elevations = ObservedElevations_Thermo/1e3 #abs(outputAges.iloc[i*2].values) /1e3
                 # sort data by elevations
                 indices = np.argsort(Elevations)
                 elev = Elevations[indices[:]]
-                
-                ages = outputAges.iloc[i*2+1].values; ages = ages[indices]
-                self.plotSpace.axes.plot(ages,elev/1e3,'-',marker = ageMarker[self.ThermochronometerID],
-                                         color = colors[i], label='Param = '+str(round(paramValues[i],3)) + ', Misfit = '+str(round(Misfit[i],2)),
+   
+                ages = outputAges.iloc[i*2+1].values;
+                ages = ages[indices]
+                self.plotSpace.axes.plot(ages,abs(elev),'-',marker = ageMarker[self.ThermochronometerID],
+                                         color = colors[i], label='Param = '+str(round(paramValues[i],3)) + ', Misfit = '+str(round(Misfit[i*2+1],2)),
                                          markeredgecolor='black')
             # Plot observations
-            self.plotSpace.axes.errorbar(Observed_Data, ObservedElevations/1e3,xerr = Observed_error,
+            if self.Normalize_y.isChecked() == True: # Normalize elevation
+                ObservedElevations_temp = (ObservedElevations_temp - np.min(ObservedElevations_temp)) / (np.max(ObservedElevations_temp)-np.min(ObservedElevations_temp))
+                ObservedElevations = ObservedElevations_temp / 1e3
+            else:
+                ObservedElevations = ObservedElevations_temp / 1e3
+
+            self.plotSpace.axes.errorbar(Observed_Data, abs(ObservedElevations),xerr = Observed_error,
                       fmt = ageMarker[self.ThermochronometerID], label = 'observed_data', color = 'black',
                       markeredgecolor='black',markerfacecolor = 'white',zorder=9)
     

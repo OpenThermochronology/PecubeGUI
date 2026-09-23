@@ -24,17 +24,42 @@ def get_gradient_color(c1,c2,mix=0):
     return matplotlib.colors.to_hex((1-mix)*c1 + mix*c2)
 
 
-def make_error_boxes(ax,xdata,ydata,xerror,yerror,facecolor='g',edgecolor='none',alpha=0.5,label='Portion extracted'):
-    """ plot boxes for 4He/3He (see output.py)"""
-   
-    x_modif = [xdata.values[i-1]  if i > 0 else 0 for i in range(len(xdata.values))]
-    Width = [xdata.values[i] - xdata.values[i-1] + xerror.values[i]  if i > 0 else xdata.values[i] + xerror.values[i] for i in range(len(xdata.values))]
-    # Loop over data points, creat box from errors at each point
-    errorboxes = [Rectangle((x, y - ye),W, 2*ye)
-                  for x, y, W, ye in zip(x_modif, ydata.values, Width, yerror.values)]
-    # Create patch collection with specified colour/alpha
-    pc = PatchCollection(errorboxes, facecolor=facecolor, alpha=alpha,
-                         edgecolor=edgecolor,label=label)
+def make_error_boxes(ax,xdata,ydata,xerror,yerror,facecolor='g',edgecolor='none',colorline='none',alpha=0.5,label='Portion extracted'):
+    """ plot boxes for 4He/3He spectra (see oset_thermochronometers.py).
+    The box integrates gas released over a finite
+    heating range, rather than one exact release step point on the cumulative
+    axis. The cumulative axis begins at zero and ends at one.
+    Vertically, the center of each box is the measured Rstep/Rbulk, and its
+    height represents the propagated uncertainty in that normalized ratio.
+
+    xdata: observed released fraction of 3He
+    ydata: observed 4He/3He ratios for each heating step
+    xerror: error in the released fraction of 3He
+    yerror: error in the 4He/3He ratios
+    """
+
+    # Get left and right boundaries of each box
+    right_boundaries = xdata.values
+    left_boundaries = np.zeros(np.size(xdata.values))
+    left_boundaries[1:] = right_boundaries[:-1]
+    left_boundaries[0] = 0.0
+    
+    # Build each box from the cumulative release boundaries.  The y error is
+    # represented symmetrically around the measured ratio.
+    errorboxes = [Rectangle((left, y - ye), right - left, 2 * ye)
+                  for left, right, y, ye in zip(
+                      left_boundaries, right_boundaries, ydata.values, yerror.values)]
+    # Keep the fill translucent while drawing the box edges fully opaque.
+    fill_color = matplotlib.colors.to_rgba(facecolor, alpha=0.5)
+    border_color = matplotlib.colors.to_rgba(edgecolor, alpha=1.0)
+    pc = PatchCollection(errorboxes, facecolor=fill_color,
+                         edgecolor=border_color, label=label)
     
     # Add collection to axes
     ax.add_collection(pc)
+
+    # Plot each measured ratio across the full width of its corresponding box.
+    line_x = np.column_stack((left_boundaries, right_boundaries)).ravel()
+    line_y = np.repeat(ydata.values, 2)
+    ax.plot(line_x, line_y, color=colorline, alpha=1.0, label=label)
+    ax.set_xlim(left_boundaries[0], right_boundaries[-1])
